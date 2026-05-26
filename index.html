@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestro Hackatón de Amor 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Corazones flotantes */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: floatUp 4s ease-in infinite;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Navegación */
+        .nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn.active {
+            background: white;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        /* Contenedor principal */
+        .main-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Secciones */
+        .section {
+            min-height: 100vh;
+            display: none;
+            padding: 80px 20px 40px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Títulos de sección */
+        .section-title {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+            50% { text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        }
+
+        /* Galería con parallax */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(0);
+            transition: all 0.5s;
+            cursor: pointer;
+            aspect-ratio: 4/3;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 30px 20px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 50%;
+            margin: 40px 0;
+            position: relative;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .timeline-item:nth-child(even) {
+            justify-content: flex-start;
+            padding-right: 0;
+            padding-left: 50%;
+        }
+
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .timeline-content img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Carta animada */
+        .letter {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .letter-content {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #333;
+            min-height: 200px;
+        }
+
+        .letter-photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .letter-photo {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s;
+        }
+
+        .letter-photo.revealed {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Memorama */
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.5s;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.matched {
+            animation: matchPulse 0.5s ease;
+        }
+
+        @keyframes matchPulse {
+            0%, 100% { transform: scale(1) rotateY(180deg); }
+            50% { transform: scale(1.1) rotateY(180deg); }
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+
+        .card-front {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transform: rotateY(180deg);
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        /* Reproductor musical */
+        .music-player {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .album-art {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .music-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .control-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #667eea;
+            transform: scale(1.1);
+        }
+
+        .lyrics {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-style: italic;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                top: auto;
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                justify-content: center;
+            }
+
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(even) {
+                padding: 0 0 0 50px;
+            }
+
+            .memory-game {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .album-art {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        /* Scroll suave */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Corazones flotantes -->
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <!-- Navegación -->
+    <nav class="nav">
+        <button class="nav-btn active" onclick="showSection('gallery')">📸 Galería</button>
+        <button class="nav-btn" onclick="showSection('timeline')">📅 Timeline</button>
+        <button class="nav-btn" onclick="showSection('letter')">💌 Carta</button>
+        <button class="nav-btn" onclick="showSection('memory')">🎮 Memorama</button>
+        <button class="nav-btn" onclick="showSection('music')">🎵 Música</button>
+    </nav>
+
+    <div class="main-container">
+        <!-- Sección 1: Galería con Parallax -->
+        <div id="gallery" class="section active">
+            <h1 class="section-title">Nuestros Momentos Mágicos 💕</h1>
+            <div class="gallery">
+                <div class="gallery-item">
+                    <img src="imagenes/fto-1.jpeg" alt="Tu y Yo" data-parallax="0.5">
+                    <div class="gallery-caption">El momento en que todo comenzó ✨</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="/api/placeholder/400/300" alt="Foto 2" data-parallax="0.3">
+                    <div class="gallery-caption">Programando juntos nuestro amor 💻</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="/api/placeholder/400/300" alt="Foto 3" data-parallax="0.7">
+                    <div class="gallery-caption">Descubriendo que somos el mejor equipo 💑</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="/api/placeholder/400/300" alt="Foto 4" data-parallax="0.4">
+                    <div class="gallery-caption">Cada línea de código, un latido ❤️</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="/api/placeholder/400/300" alt="Foto 5" data-parallax="0.6">
+                    <div class="gallery-caption">Debugging juntos = amor verdadero 🔍</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="/api/placeholder/400/300" alt="Foto 6" data-parallax="0.2">
+                    <div class="gallery-caption">Nuestro hackatón, nuestra historia 📝</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 2: Timeline -->
+        <div id="timeline" class="section">
+            <h1 class="section-title">Nuestra Historia en el Hackatón 📅</h1>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>🌅 El Inicio</h3>
+                        <img src="/api/placeholder/400/200" alt="Momento 1">
+                        <p>Cuando decidimos participar juntos y todo comenzó...</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>💡 La Idea</h3>
+                        <img src="/api/placeholder/400/200" alt="Momento 2">
+                        <p>Ese momento mágico donde nuestra creatividad brilló</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>🚀 El Desarrollo</h3>
+                        <img src="/api/placeholder/400/200" alt="Momento 3">
+                        <p>Horas de código, café y miradas que lo decían todo</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>🎉 El Éxito</h3>
+                        <img src="/api/placeholder/400/200" alt="Momento 4">
+                        <p>Porque ganar es mejor cuando es contigo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 3: Carta de Amor -->
+        <div id="letter" class="section">
+            <h1 class="section-title">Carta para Ti 💌</h1>
+            <div class="letter">
+                <div class="letter-content" id="letterText"></div>
+                <div class="letter-photos">
+                    <img src="/api/placeholder/300/300" alt="Foto carta 1" class="letter-photo">
+                    <img src="/api/placeholder/300/300" alt="Foto carta 2" class="letter-photo">
+                    <img src="/api/placeholder/300/300" alt="Foto carta 3" class="letter-photo">
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Memorama -->
+        <div id="memory" class="section">
+            <h1 class="section-title">Juego de Memoria 🎮</h1>
+            <div class="memory-game" id="memoryGame"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <p style="color: white; font-size: 1.2em;">Pares encontrados: <span id="pairsFound">0</span>/6</p>
+                <button onclick="resetMemoryGame()" style="background: white; color: #764ba2; border: none; padding: 10px 30px; border-radius: 25px; cursor: pointer; font-size: 1em; margin-top: 10px;">
+                    🔄 Reiniciar Juego
+                </button>
+            </div>
+        </div>
+
+        <!-- Sección 5: Álbum Musical -->
+        <div id="music" class="section">
+            <h1 class="section-title">Nuestra Canción 🎵</h1>
+            <div class="music-player">
+                <img src="/api/placeholder/400/400" alt="Album Art" class="album-art" id="albumArt">
+                <h2 style="color: #764ba2; margin-bottom: 10px;" id="songTitle">Nuestra Canción Especial</h2>
+                <div class="music-controls">
+                    <button class="control-btn" onclick="previousTrack()">⏮️</button>
+                    <button class="control-btn" id="playBtn" onclick="togglePlay()">▶️</button>
+                    <button class="control-btn" onclick="nextTrack()">⏭️</button>
+                </div>
+                <div class="lyrics" id="lyrics">
+                    "Y es que tu amor es mi código fuente..."
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Corazones flotantes
+        function createHearts() {
+            const container = document.getElementById('heartsContainer');
+            const emojis = ['❤️', '💕', '💗', '💖', '💝', '💘', '💓', '💞'];
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                container.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 4000);
+            }, 300);
+        }
+
+        // Navegación
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (sectionId === 'letter') {
+                startTypewriter();
+            }
+            if (sectionId === 'memory') {
+                resetMemoryGame();
+            }
+        }
+
+        // Efecto parallax en galería
+        document.addEventListener('mousemove', (e) => {
+            const items = document.querySelectorAll('[data-parallax]');
+            items.forEach(item => {
+                const speed = item.getAttribute('data-parallax');
+                const x = (window.innerWidth - e.pageX * speed) / 100;
+                const y = (window.innerHeight - e.pageY * speed) / 100;
+                item.style.transform = `translateX(${x}px) translateY(${y}px)`;
+            });
+        });
+
+        // Carta con efecto máquina de escribir
+        const letterMessage = `Mi amor,
+
+        Cada momento del hackatón fue especial porque estuviste a mi lado. Desde las primeras líneas de código hasta el último commit, supe que nuestro equipo era perfecto.
+
+        No solo creamos un proyecto increíble, construimos recuerdos que atesoro en lo más profundo de mi corazón. Tus ojos brillaban con cada idea, tu sonrisa iluminaba incluso los momentos más difíciles del debugging.
+
+        Eres mi compañera de código, mi musa, mi mejor amiga y el amor de mi vida. Este HTML es solo una pequeña muestra de lo que siento por ti, porque nuestro amor es el mejor algoritmo que la vida pudo escribir.
+
+        Te amo con cada bit de mi ser ❤️`;
+
+        function startTypewriter() {
+            const element = document.getElementById('letterText');
+            element.textContent = '';
+            let i = 0;
+            
+            const photos = document.querySelectorAll('.letter-photo');
+            photos.forEach(photo => photo.classList.remove('revealed'));
+            
+            function type() {
+                if (i < letterMessage.length) {
+                    element.textContent += letterMessage.charAt(i);
+                    i++;
+                    
+                    // Revelar fotos gradualmente
+                    if (i > letterMessage.length * 0.25) photos[0].classList.add('revealed');
+                    if (i > letterMessage.length * 0.5) photos[1].classList.add('revealed');
+                    if (i > letterMessage.length * 0.75) photos[2].classList.add('revealed');
+                    
+                    setTimeout(type, 50);
+                }
+            }
+            
+            type();
+        }
+
+        // Memorama
+        const memoryImages = [
+            '❤️', '💕', '💗', '💖', '💝', '💘',
+            '❤️', '💕', '💗', '💖', '💝', '💘'
+        ];
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let isLocked = false;
+
+        function createMemoryGame() {
+            const game = document.getElementById('memoryGame');
+            game.innerHTML = '';
+            memoryCards = [...memoryImages].sort(() => Math.random() - 0.5);
+            
+            memoryCards.forEach((image, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.index = index;
+                card.dataset.value = image;
+                
+                card.innerHTML = `
+                    <div class="card-front">${image}</div>
+                    <div class="card-back">?</div>
+                `;
+                
+                card.addEventListener('click', () => flipCard(card));
+                game.appendChild(card);
+            });
+        }
+
+        function flipCard(card) {
+            if (isLocked || card.classList.contains('flipped') || card.classList.contains('matched')) {
+                return;
+            }
+            
+            card.classList.add('flipped');
+            flippedCards.push(card);
+            
+            if (flippedCards.length === 2) {
+                isLocked = true;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            
+            if (card1.dataset.value === card2.dataset.value) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                document.getElementById('pairsFound').textContent = matchedPairs;
+                flippedCards = [];
+                isLocked = false;
+                
+                if (matchedPairs === 6) {
+                    setTimeout(() => alert('🎉 ¡Felicidades! ¡Encontraste todos los pares! ¡Nuestro amor es perfecto! 💕'), 500);
+                }
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    flippedCards = [];
+                    isLocked = false;
+                }, 1000);
+            }
+        }
+
+        function resetMemoryGame() {
+            matchedPairs = 0;
+            flippedCards = [];
+            isLocked = false;
+            document.getElementById('pairsFound').textContent = '0';
+            createMemoryGame();
+        }
+
+        // Reproductor musical
+        const tracks = [
+            {
+                title: 'Nuestra Canción Especial',
+                lyrics: '"Y es que tu amor es mi código fuente..."',
+                art: '/api/placeholder/400/400'
+            },
+            {
+                title: 'Perfecta para Nosotros',
+                lyrics: '"Contigo cada bug es más fácil de resolver..."',
+                art: '/api/placeholder/400/400'
+            },
+            {
+                title: 'Hackathon de Amor',
+                lyrics: '"Programamos nuestro futuro juntos..."',
+                art: '/api/placeholder/400/400'
+            }
+        ];
+
+        let currentTrack = 0;
+        let isPlaying = false;
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = isPlaying ? '⏸️' : '▶️';
+        }
+
+        function nextTrack() {
+            currentTrack = (currentTrack + 1) % tracks.length;
+            updateTrackInfo();
+        }
+
+        function previousTrack() {
+            currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+            updateTrackInfo();
+        }
+
+        function updateTrackInfo() {
+            document.getElementById('songTitle').textContent = tracks[currentTrack].title;
+            document.getElementById('lyrics').textContent = tracks[currentTrack].lyrics;
+            document.getElementById('albumArt').src = tracks[currentTrack].art;
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            createHearts();
+            startTypewriter();
+            resetMemoryGame();
+        });
+
+        // Scroll suave con parallax
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                const speed = item.querySelector('img').getAttribute('data-parallax');
+                if (speed) {
+                    item.querySelector('img').style.transform = `translateY(${scrolled * speed}px)`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
