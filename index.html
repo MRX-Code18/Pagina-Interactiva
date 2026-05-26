@@ -151,7 +151,7 @@
             transform: translateY(0);
             transition: all 0.5s;
             cursor: pointer;
-            aspect-ratio: 4/3;
+            aspect-ratio: 3/4;
         }
 
         .gallery-item:hover {
@@ -163,11 +163,12 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center 15%;
             transition: transform 0.5s;
         }
 
         .gallery-item:hover img {
-            transform: scale(1.1);
+            transform: scale(1.02);
         }
 
         .gallery-caption {
@@ -229,8 +230,9 @@
 
         .timeline-content img {
             width: 100%;
-            height: 200px;
+            height: 350px;
             object-fit: cover;
+            object-position: center 15%;
             border-radius: 10px;
             margin: 10px 0;
         }
@@ -263,6 +265,7 @@
             line-height: 1.6;
             color: #333;
             min-height: 200px;
+            white-space: pre-line;
         }
 
         .letter-photos {
@@ -274,8 +277,9 @@
 
         .letter-photo {
             width: 100%;
-            height: 200px;
+            height: 350px;
             object-fit: cover;
+            object-position: center 15%;
             border-radius: 10px;
             opacity: 0;
             transform: scale(0.8);
@@ -358,22 +362,36 @@
             margin: 0 auto;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
         }
 
         .album-art {
             width: 300px;
             height: 300px;
+            aspect-ratio: 1 / 1;
             object-fit: cover;
-            border-radius: 15px;
+            object-position: center 10%;
+            border-radius: 50%;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 5px solid #764ba2;
+            animation: spin 15s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .album-art.playing {
+            animation-play-state: running;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
         }
 
         .music-controls {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             margin: 20px 0;
         }
 
@@ -387,6 +405,9 @@
             font-size: 1.2em;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .control-btn:hover {
@@ -394,13 +415,111 @@
             transform: scale(1.1);
         }
 
-        .lyrics {
-            background: #f8f9fa;
+        /* === CAMBIO MÁGICO: Botón de letra estilizado tipo Apple Music === */
+        .control-btn.lyc-btn {
+            font-size: 0.9em;
+            font-weight: bold;
+            font-family: inherit;
+            background: #f5576c;
+        }
+
+        /* === CAMBIO MÁGICO: Estilos de la pantalla lateral desplegable de Letras === */
+        .lyrics-modal {
+            position: fixed;
+            top: 0;
+            right: -100%; /* Oculto por defecto a la derecha */
+            width: 450px;
+            height: 100vh;
+            background: rgba(40, 20, 70, 0.88); /* Fondo oscuro translúcido */
+            backdrop-filter: blur(25px); /* Efecto difuminado de cristal */
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 2000;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+            transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1); /* Despliegue premium */
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            overflow-y: auto;
+        }
+
+        .lyrics-modal.open {
+            right: 0; /* Despliega hacia la izquierda */
+        }
+
+        .lyrics-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .close-lyrics {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .close-lyrics:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* === CAMBIO MÁGICO: Brillo difuminado de fondo para las letras === */
+        .lyrics-scroll-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            text-align: left;
+            position: relative;
+        }
+
+        .lyrics-block {
+            background: rgba(255, 255, 255, 0.03);
             padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(245, 87, 108, 0.15); /* Brillo sutil de fondo */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            white-space: pre-line;
+            line-height: 1.8;
+        }
+
+        .lyric-title-tag {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #f093fb;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .lyrics-text-en {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+
+        .lyrics-text-es {
+            font-size: 1.05em;
+            color: rgba(255, 255, 255, 0.7);
             font-style: italic;
-            color: #666;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-top: 12px;
+            padding-top: 12px;
+            text-shadow: 0 0 15px rgba(240,147,251,0.2);
         }
 
         /* Responsive */
@@ -431,6 +550,10 @@
                 padding: 0 0 0 50px;
             }
 
+            .timeline-content img {
+                height: 260px;
+            }
+
             .memory-game {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -438,6 +561,12 @@
             .album-art {
                 width: 200px;
                 height: 200px;
+            }
+
+            /* Adaptación del modal en celulares */
+            .lyrics-modal {
+                width: 100%;
+                right: -100%;
             }
         }
 
@@ -448,10 +577,8 @@
     </style>
 </head>
 <body>
-    <!-- Corazones flotantes -->
     <div class="hearts-container" id="heartsContainer"></div>
 
-    <!-- Navegación -->
     <nav class="nav">
         <button class="nav-btn active" onclick="showSection('gallery')">📸 Galería</button>
         <button class="nav-btn" onclick="showSection('timeline')">📅 Timeline</button>
@@ -461,86 +588,82 @@
     </nav>
 
     <div class="main-container">
-        <!-- Sección 1: Galería con Parallax -->
         <div id="gallery" class="section active">
-            <h1 class="section-title">Nuestros Momentos Mágicos 💕</h1>
+            <h1 class="section-title">Nuestros Momentos 📸</h1>
             <div class="gallery">
                 <div class="gallery-item">
-                    <img src="imagenes/foto-1.jpeg" alt="Tu y Yo" data-parallax="0.5">
-                    <div class="gallery-caption">El momento en que todo comenzó ✨</div>
+                    <img src="img/foto-1.jpeg" alt="Tu y Yo" data-parallax="0.5">
+                    <div class="gallery-caption">Como amo a mi noviecita toda hermosa ese dia fue el mas hermoso al ir ambos del mismo color ✨</div>
                 </div>
                 <div class="gallery-item">
-                    <img src="/api/placeholder/400/300" alt="Foto 2" data-parallax="0.3">
+                    <img src="img/fto-2.jpeg" alt="Foto 2" data-parallax="0.3">
                     <div class="gallery-caption">Programando juntos nuestro amor 💻</div>
                 </div>
                 <div class="gallery-item">
-                    <img src="/api/placeholder/400/300" alt="Foto 3" data-parallax="0.7">
-                    <div class="gallery-caption">Descubriendo que somos el mejor equipo 💑</div>
+                    <img src="img/fto-3.jpeg" alt="Foto 3" data-parallax="0.7">
+                    <div class="gallery-caption">Descubriendo que somos el mejor equipo apesar de las dificultades que se nos presento 💑</div>
                 </div>
                 <div class="gallery-item">
-                    <img src="/api/placeholder/400/300" alt="Foto 4" data-parallax="0.4">
-                    <div class="gallery-caption">Cada línea de código, un latido ❤️</div>
+                    <img src="img/fto-4.jpeg" alt="Foto 4" data-parallax="0.4">
+                    <div class="gallery-caption">Cada línea de código, siempre volteaba a verte porque me hacias sentir tranquilo ❤️</div>
                 </div>
                 <div class="gallery-item">
-                    <img src="/api/placeholder/400/300" alt="Foto 5" data-parallax="0.6">
-                    <div class="gallery-caption">Debugging juntos = amor verdadero 🔍</div>
+                    <img src="img/fto-5.jpeg" alt="Foto 5" data-parallax="0.6">
+                    <div class="gallery-caption">Contigo fue mas que una gran noche, mas que un dia trabajando pude sentirme tranquilo y cada que estaba en apuros por eso siempre iba a ti porque eres todo lo que necesitaba 🔍</div>
                 </div>
                 <div class="gallery-item">
-                    <img src="/api/placeholder/400/300" alt="Foto 6" data-parallax="0.2">
-                    <div class="gallery-caption">Nuestro hackatón, nuestra historia 📝</div>
+                    <img src="img/fto-6.jpeg" alt="Foto 6" data-parallax="0.2">
+                    <div class="gallery-caption">Nuestro hackatón, nuestra primer historia 📝</div>
                 </div>
             </div>
         </div>
 
-        <!-- Sección 2: Timeline -->
         <div id="timeline" class="section">
-            <h1 class="section-title">Nuestra Historia en el Hackatón 📅</h1>
+            <h1 class="section-title">Nuestra Primer Historia 📅</h1>
             <div class="timeline">
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h3>🌅 El Inicio</h3>
-                        <img src="/api/placeholder/400/200" alt="Momento 1">
-                        <p>Cuando decidimos participar juntos y todo comenzó...</p>
+                        <img src="img/fto-7.jpeg" alt="Momento 1">
+                        <p>Cuando decidimos participar juntos con nervios, un poco de miedo pero apesar de eso ambos hicimos lo mejor y me sorprende que tienes un gran protencial realmente tengo una noviecita maravillosa...</p>
                     </div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h3>💡 La Idea</h3>
-                        <img src="/api/placeholder/400/200" alt="Momento 2">
-                        <p>Ese momento mágico donde nuestra creatividad brilló</p>
+                        <img src="img/fto-8.jpeg" alt="Momento 2">
+                        <p>Ese momento mágico donde nuestra creatividad brilló realmente me gusto mucho estar contigo amo, ame ese dia ojala pronto volvamos y seamos mas fortes</p>
                     </div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <h3>🚀 El Desarrollo</h3>
-                        <img src="/api/placeholder/400/200" alt="Momento 3">
-                        <p>Horas de código, café y miradas que lo decían todo</p>
+                        <img src="img/fto-9.jpeg" alt="Momento 3">
+                        <p>Horas de código, café y miradas que lo decían todos pero mis ojos siempre fijos en ti corazon de melon</p>
                     </div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-content">
-                        <h3>🎉 El Éxito</h3>
-                        <img src="/api/placeholder/400/200" alt="Momento 4">
-                        <p>Porque ganar es mejor cuando es contigo</p>
+                        <h3>🎉 Resultados</h3>
+                        <img src="img/fto-10.jpeg" alt="Momento 4">
+                        <p>Sin importar el resultado lo que tambien amo es que tu estabas y solo de escuchar sea que perdimos o ganemos aun asi ire a tus brazos mi amor</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sección 3: Carta de Amor -->
         <div id="letter" class="section">
             <h1 class="section-title">Carta para Ti 💌</h1>
             <div class="letter">
                 <div class="letter-content" id="letterText"></div>
                 <div class="letter-photos">
-                    <img src="/api/placeholder/300/300" alt="Foto carta 1" class="letter-photo">
-                    <img src="/api/placeholder/300/300" alt="Foto carta 2" class="letter-photo">
-                    <img src="/api/placeholder/300/300" alt="Foto carta 3" class="letter-photo">
+                    <img src="img/fto-12.jpg" alt="Foto carta 1" class="letter-photo">
+                    <img src="img/fto-13.png" alt="Foto carta 2" class="letter-photo">
+                    <img src="img/fto-14.jpg" alt="Foto carta 3" class="letter-photo">
                 </div>
             </div>
         </div>
 
-        <!-- Sección 4: Memorama -->
         <div id="memory" class="section">
             <h1 class="section-title">Juego de Memoria 🎮</h1>
             <div class="memory-game" id="memoryGame"></div>
@@ -552,20 +675,37 @@
             </div>
         </div>
 
-        <!-- Sección 5: Álbum Musical -->
         <div id="music" class="section">
             <h1 class="section-title">Nuestra Canción 🎵</h1>
             <div class="music-player">
-                <img src="/api/placeholder/400/400" alt="Album Art" class="album-art" id="albumArt">
-                <h2 style="color: #764ba2; margin-bottom: 10px;" id="songTitle">Nuestra Canción Especial</h2>
+                <img src="img/foto-1.jpeg" alt="Album Art" class="album-art" id="albumArt">
+                <h2 style="color: #764ba2; margin-bottom: 10px;" id="songTitle">Cargando track...</h2>
+                
                 <div class="music-controls">
                     <button class="control-btn" onclick="previousTrack()">⏮️</button>
                     <button class="control-btn" id="playBtn" onclick="togglePlay()">▶️</button>
                     <button class="control-btn" onclick="nextTrack()">⏭️</button>
+                    <button class="control-btn lyc-btn" onclick="openLyricsPanel()">Lyc</button>
                 </div>
-                <div class="lyrics" id="lyrics">
-                    "Y es que tu amor es mi código fuente..."
-                </div>
+                
+                <audio id="mainAudioElement"></audio>
+            </div>
+        </div>
+    </div>
+
+    <div id="lyricsPanel" class="lyrics-modal">
+        <div class="lyrics-modal-header">
+            <h3 id="lyricsPanelTitle" style="color: #f093fb;">Letra de la Canción</h3>
+            <button class="close-lyrics" onclick="closeLyricsPanel()">✕</button>
+        </div>
+        <div class="lyrics-scroll-area">
+            <div class="lyrics-block">
+                <span class="lyric-title-tag">Original Lyrics (EN)</span>
+                <p id="panelLyricEn" class="lyrics-text-en">Cargando letra original...</p>
+            </div>
+            <div class="lyrics-block">
+                <span class="lyric-title-tag">Traducción (ES)</span>
+                <p id="panelLyricEs" class="lyrics-text-es">Cargando traducción...</p>
             </div>
         </div>
     </div>
@@ -607,9 +747,11 @@
             if (sectionId === 'memory') {
                 resetMemoryGame();
             }
+            // Al cambiar de sección cerramos la letra por si estaba abierta
+            closeLyricsPanel();
         }
 
-        // Efecto parallax en galería
+        // Parallax
         document.addEventListener('mousemove', (e) => {
             const items = document.querySelectorAll('[data-parallax]');
             items.forEach(item => {
@@ -620,18 +762,21 @@
             });
         });
 
-        // Carta con efecto máquina de escribir
-        const letterMessage = `Mi amor,
+        /* ==========================================================================
+           ==================== AQUÍ INICIA TU CARTA DE AMOR ========================
+           ========================================================================== */
+        const letterMessage = `Mi amor aqui hago un breve espacio porque? porque quiero recordarte lo importante que tu eres para mi, nunca hago cosas por alguien te recuerdo lo que te hize jsjsj no fue lo mejor lo se aun me falta, pero quiero que sepas que me importas tanto tanto que quiero hacerte y me asegurare de hacerte feliz siempre siempre mi niña hermosa, te lo juro, te lo prometo mi amor porque contigo me estoy sitiendo vivo y esta oportunidad que tu me haz dado no la pienso perder. 💕`;
 
-        Cada momento del hackatón fue especial porque estuviste a mi lado. Desde las primeras líneas de código hasta el último commit, supe que nuestro equipo era perfecto.
-
-        No solo creamos un proyecto increíble, construimos recuerdos que atesoro en lo más profundo de mi corazón. Tus ojos brillaban con cada idea, tu sonrisa iluminaba incluso los momentos más difíciles del debugging.
-
-        Eres mi compañera de código, mi musa, mi mejor amiga y el amor de mi vida. Este HTML es solo una pequeña muestra de lo que siento por ti, porque nuestro amor es el mejor algoritmo que la vida pudo escribir.
-
-        Te amo con cada bit de mi ser ❤️`;
+        // Control de máquina de escribir
+        let letterTimeout = null;
+        let isWriting = false;
 
         function startTypewriter() {
+            if (isWriting && letterTimeout) {
+                clearTimeout(letterTimeout);
+            }
+            
+            isWriting = true;
             const element = document.getElementById('letterText');
             element.textContent = '';
             let i = 0;
@@ -643,16 +788,14 @@
                 if (i < letterMessage.length) {
                     element.textContent += letterMessage.charAt(i);
                     i++;
-                    
-                    // Revelar fotos gradualmente
-                    if (i > letterMessage.length * 0.25) photos[0].classList.add('revealed');
-                    if (i > letterMessage.length * 0.5) photos[1].classList.add('revealed');
-                    if (i > letterMessage.length * 0.75) photos[2].classList.add('revealed');
-                    
-                    setTimeout(type, 50);
+                    if (i > letterMessage.length * 0.25 && photos[0]) photos[0].classList.add('revealed');
+                    if (i > letterMessage.length * 0.50 && photos[1]) photos[1].classList.add('revealed');
+                    if (i > letterMessage.length * 0.75 && photos[2]) photos[2].classList.add('revealed');
+                    letterTimeout = setTimeout(type, 50);
+                } else {
+                    isWriting = false;
                 }
             }
-            
             type();
         }
 
@@ -676,25 +819,16 @@
                 card.className = 'memory-card';
                 card.dataset.index = index;
                 card.dataset.value = image;
-                
-                card.innerHTML = `
-                    <div class="card-front">${image}</div>
-                    <div class="card-back">?</div>
-                `;
-                
+                card.innerHTML = `<div class="card-front">${image}</div><div class="card-back">?</div>`;
                 card.addEventListener('click', () => flipCard(card));
                 game.appendChild(card);
             });
         }
 
         function flipCard(card) {
-            if (isLocked || card.classList.contains('flipped') || card.classList.contains('matched')) {
-                return;
-            }
-            
+            if (isLocked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
             card.classList.add('flipped');
             flippedCards.push(card);
-            
             if (flippedCards.length === 2) {
                 isLocked = true;
                 checkMatch();
@@ -703,7 +837,6 @@
 
         function checkMatch() {
             const [card1, card2] = flippedCards;
-            
             if (card1.dataset.value === card2.dataset.value) {
                 card1.classList.add('matched');
                 card2.classList.add('matched');
@@ -711,9 +844,8 @@
                 document.getElementById('pairsFound').textContent = matchedPairs;
                 flippedCards = [];
                 isLocked = false;
-                
                 if (matchedPairs === 6) {
-                    setTimeout(() => alert('🎉 ¡Felicidades! ¡Encontraste todos los pares! ¡Nuestro amor es perfecto! 💕'), 500);
+                    setTimeout(() => alert('🎉 ¡Felicidades! ¡Encontraste todos los pares! 💕'), 500);
                 }
             } else {
                 setTimeout(() => {
@@ -733,67 +865,521 @@
             createMemoryGame();
         }
 
-        // Reproductor musical
+
+        /* ==========================================================================
+           ============= LETRAS COMPLETAS E INMUTABLES DE LAS CANCIONES ==============
+           ========================================================================== */
+
+        const textDayglowEN = `I feel close
+Well, maybe I'm not, heaven knows
+It's a spotlight stuck on the ceiling
+Why are these the things that I'm feeling?
+There's so much time
+For me to speak up, but I keep quiet
+I'll complicate the most of the mantra
+The power is out and I can't turn the fan on
+So can I call you tonight?
+I'm trying to make up my mind
+Just how I feel
+Could you tell me what's real?
+I hear your voice on the phone
+Now I'm no longer alone
+Just how I feel
+Could you tell me what's real anymore?
+'Cause I wouldn't know
+Voice so low
+Sneaking around, so it goes
+I always try my best to listen
+Picking up things that I can fidget
+Circle speed, pacing around, watching my feet
+Batteries drain, I get the memo
+I think that I might have to let you go
+So can I call you tonight?
+I'm trying to make up my mind
+Just how I feel
+Could you tell me what's real?
+I hear your voice on the phone
+Now I'm no longer alone
+Just how I feel
+Could you tell me what's real anymore?
+'Cause I wouldn't know
+Don't go, don't go so easy
+Don't go, don't go and leave me
+Don't go, don't go so easy
+Don't go, don't go and leave me
+Don't go, don't go so easy
+Don't go, don't go and leave me
+Don't go, don't go so easy
+Don't go, go
+So can I call you tonight?
+I'm trying to make up my mind
+Just how I feel
+Could you tell me what's real?
+I hear your voice on the phone
+Now I'm no longer alone
+Just how I feel
+Could you tell me what's real anymore?
+'Cause I wouldn't know 💕`;
+
+        const textDayglowES = `Me siento cerca
+
+Bueno, tal vez no, el cielo sabe
+
+Es una luz atrapada en el techo
+
+¿Por qué estoy sintiendo estas cosas?
+
+Hay tanto tiempo
+
+Para que yo hable, pero me quedo callado
+
+Voy a complicar al máximo el mantra
+
+No hay electricidad y no puedo encender el ventilador
+
+Entonces, ¿puedo llamarte esta noche?
+
+Estoy tratando de decidirme
+
+Justo como me siento
+
+¿Podrías decirme qué es real?
+
+Escucho tu voz en el teléfono
+
+Ahora ya no estoy solo
+
+Justo como me siento
+
+¿Podrías decirme qué ya no es real?
+
+Porque no sabría
+
+
+Voz tan baja
+
+Furtivamente, así que va
+
+Siempre hago mi mejor esfuerzo para escuchar
+
+Recogiendo cosas que puedo inquietar
+
+Velocidad del círculo
+
+Paseando, mirando mis pies
+
+Las baterías se agotan, recibo el memo
+
+Creo que debería dejarte ir
+
+Entonces, ¿puedo llamarte esta noche?
+
+Estoy tratando de decidirme
+
+Justo como me siento
+
+¿Podrías decirme qué es real?
+
+Escucho tu voz en el teléfono
+
+Ahora ya no estoy solo
+
+Justo como me siento
+
+¿Podrías decirme qué ya no es real?
+
+Porque no sabría
+
+
+No te vayas, no vayas tan fácil
+
+No te vayas, no te vayas y me dejes
+
+No te vayas, no vayas tan fácil
+
+No te vayas, no te vayas y me dejes
+
+No te vayas, no vayas tan fácil
+
+No te vayas, no te vayas y me dejes
+
+No te vayas, no vayas tan fácil
+
+No te vayas, no te vayas y me dejes
+
+No te vayas
+
+
+Entonces, ¿puedo llamarte esta noche?
+
+Estoy tratando de decidirme
+
+Justo como me siento
+
+¿Podrías decirme qué es real?
+
+Escucho tu voz en el teléfono
+
+Ahora ya no estoy solo
+
+Justo como me siento
+
+¿Podrías decirme qué ya no es real?
+
+Porque no sabría 💕`;
+
+        const textLilPeepEN = `Wait right here (wait right here)
+I'll be back in the mornin' (mornin')
+I know that I'm not that important to you
+But to me, girl, you're so much more than gorgeous (yeah)
+So much more than perfect (yeah)
+Right now, I know that I'm not really worth it
+If you give me time, I can work on it
+Give me some time while I work on it
+Losin' your patience, and, girl, I don't blame you
+The Earth's in rotation, you're waitin' for me
+Look at my face when I fuck on your waist
+'Cause we only have one conversation a week
+That's why your friends always hatin' on me
+Fuck 'em though, I did this all by myself
+Matter fact, I ain't never asked no one for help
+And that's why I don't pick up my phone when it ring
+None of my exes is over Lil Peep
+Nobody flexin' as much as I be
+That's why she text me and tell me she love me
+She know that someday I'll be over the sea
+Makin' my money and smokin' my weed
+I think it's funny, she open up to me
+Get comfortable with me, once I got it comin'
+I love her, she love me
+I know that I'm nothing like someone her family want me to be
+If I find a way, would you walk it with me?
+Look at my face while you talkin' to me
+'Cause we only have one conversation a week
+Can I get one conversation at least?
+Shout out to everyone makin' my beats
+You helpin' me preach
+This music's the only thing keepin' the peace when I fall into pieces
+Look at the sky tonight
+All of the stars have a reason
+A reason to shine, a reason like mine
+And I'm fallin' to pieces
+Look at the sky tonight
+All of them stars have a reason ✨`;
+
+        const textLilPeepES = `Espera justo aquí
+
+Vuelvo en la mañana
+
+Sé que no soy tan importante para ti
+
+Pero para mí, chica, tú eres mucho más que preciosa (sí)
+
+Mucho más que perfecta (sí)
+
+Ahora, sé que no valgo la pena
+
+Pero, si me das tiempo, puedo mejorar
+
+Dame un poco de tiempo para mejorar
+
+Estás perdiendo la paciencia y, chica, no te culpo
+
+La Tierra sigue girando, tú estás esperando por mí (sí)
+
+Mírame a la cara mientras te doy de lado
+
+Porque solo hablamos una vez a la semana
+
+Por eso tus amigas siempre me maldicen
+
+Pero que se jodan, todo esto lo hice solo
+
+La verdad, nunca le pedí ayuda a nadie
+
+Y por eso no contesto el teléfono cuando suena
+
+Ninguna de mis ex superó al Lil Pepp
+
+Nadie presume tanto como yo
+
+Por eso ella me escribe y dice que me ama
+
+Ella sabe que algún día voy a ser internacional
+
+Haciendo mi dinero y fumando la mota
+
+Me parece gracioso, ella se va a abrir conmigo, va a sentirse a gusto a mi lado
+
+Cuando me lo gane, yo la amo, ella me ama
+
+Sé que no soy nada de lo que su familia quiere que yo sea
+
+Si logro arreglarme, ¿puedes venir conmigo?
+
+Mírame a la cara cuando hables conmigo
+
+Porque solo hablamos una vez a la semana
+
+¿Puedo hablar contigo al menos una vez?
+
+Un saludo a todos los que están produciendo mis beats
+
+Ustedes me están ayudando a transmitir el mensaje
+
+Esta canción es lo único que me mantiene en paz cuando estoy hecho pedazos
+
+
+Mira al cielo esta noche
+
+Todas las estrellas tienen un motivo
+
+Un motivo para brillar
+
+Un motivo como el mío, y me estoy hecho pedazos
+
+Mira al cielo esta noche
+
+Todas las estrellas tienen un motivo ✨`;
+
+        const textD4vdEN = `What do you have in store?
+One life away, we can't explore
+But I don't wanna get in the way no more
+'Cause this the type of feelin' you can't ignore, ayy
+I'm ready to break down the door
+Settle the score, can't let you go away
+I miss the smile of your face
+You know that I lo-lo-lo-love the chase
+
+You told me once that I was crazy, I said: Baby girl, I know
+But I can't let you go away, so don't you get me started now
+I want a yes, I don't want maybes, 'cause they leave me where you found me
+So don't leave
+
+Ooh, I just love the way you've got me feelin'
+In love with the feelin'
+It's like, ooh
+Take away the pain, baby, I'm healin'
+Baby, I'm healin'
+I don't need anything more
+Be the wave, I'll be the shore
+Crashing all over me, I want you
+(Fire)
+
+What do you have in store?
+Type of girl that make me drop dead on the floor
+This the only girl that I love and adore
+This the type of love that you can't ignore
+I said: Hey, she comin' my way
+She runnin' 'round sayin' whatever she wanna say
+I told her I don't wanna have to do this everyday
+Told her that I love her, but she thinkin' it's a game, oh, no
+Now she uncomfortabe
+Never wanna make her feel one-dimensional (oh, yeah-oh, nah, nah, nah)
+Don't know how we got there, don't you get me started now
+
+You told me once that I was crazy, I said: Baby girl, I know
+But I can't let you go away, so don't you get me started now
+I want a yes, I don't want maybes 'cause they leave me where you found me
+So don't leave
+
+Ooh, I just love the way you've got me feelin' (oh, you got me feelin')
+In love with the feelin' (oh, you got me feelin')
+It's like, ooh
+Take away the pain, baby, I'm healin' (baby, I'm healin')
+Baby, I'm healin' (baby, I'm healin', yeah, yeah, yeah, yeah, yeah)
+I don't need anything more (oh, oh)
+Be the wave, I'll be the shore (shore, oh)
+Crashing all over me, I want you (oh, oh, oh, oh, oh)`;
+
+        const textD4vdES = `¿Qué es lo que nos tienes guardado?
+
+Una vida lejos, que no podemos explorar
+
+Pero ya no quiero estorbar más
+
+Porque este tipo de sentimiento no se puede ignorar, ey
+
+Estoy listo para romper la puerta
+
+Ajustar las cuentas, no dejarte escapar
+
+Extraño la sonrisa en tu cara
+
+Tú sabes que me encan-an-an-anta la persecución
+
+Me dijiste una vez que yo era loco, yo respondí: Cariño, lo sé
+
+Pero no puedo dejarte ir, así que no empieces ahora
+
+Yo quiero un sí, no quiero dudas, porque me dejan justo donde me encontraste
+
+Así que no te vayas
+
+Uh, me encanta cómo me haces sentir
+
+Estoy enamorado de esta sensación
+
+Es como, uh
+
+Llévate el dolor, nena, me estoy curando
+
+Nena, me estoy curando
+
+No necesito nada más
+
+Sé la ola, yo seré la orilla
+
+Chocando sobre mí, te quiero
+
+(Fuego)
+
+
+¿Qué es lo que nos tienes guardado?
+
+El tipo de chica que me hace caer rendido al suelo
+
+Eres la única a la que amo y adoro
+
+Este es el tipo de amor que no se puede ignorar
+
+Dije: Oye, ella se acerca a mí
+
+Anda por ahí diciendo lo que quiera decir
+
+Le dije que no quiero tener que hacer esto todos los días
+
+Le dije que la amo, pero ella piensa que es un juego, oh, no
+
+Ahora está incómoda
+
+Nunca quiero que se sienta en una sola dimensión (oh, sí-oh, no, no, no)
+
+No sé cómo llegamos aquí, pero no empieces ahora
+
+Me dijiste una vez que yo era loco, yo respondí: Cariño, lo sé
+
+Pero no puedo dejarte ir, así que no empieces ahora
+
+Yo quiero un sí, no quiero dudas, porque me dejan justo donde me encontraste
+
+Así que no te vayas
+
+Uh, me encanta cómo me haces sentir (oh, me haces sentir)
+
+Estoy enamorado de esta sensación (oh, me haces sentir)
+
+Es como, uh
+
+Llévate el dolor, nena, me estoy curando (nena, me estoy curando)
+
+Nena, me estoy curando (nena, me estoy curando, sí, sí, sí, sí, sí)
+
+
+No necesito nada más (oh, oh)
+
+Sé la ola, yo seré la orilla (orilla, oh)
+
+Chocando sobre mí, te quiero (oh, oh, oh, oh, oh) 🔐`;
+
+
+        /* ==========================================================================
+           =================== MATRIZ REPRODUCTORA DE TRACKS =======================
+           ========================================================================== */
+
         const tracks = [
             {
-                title: 'Nuestra Canción Especial',
-                lyrics: '"Y es que tu amor es mi código fuente..."',
-                art: '/api/placeholder/400/400'
+                title: 'Can I Call You Tonight?',
+                art: 'img/foto-1.jpeg', 
+                url: 'music/cancion-3.mp3', 
+                en: textDayglowEN,
+                es: textDayglowES
             },
             {
-                title: 'Perfecta para Nosotros',
-                lyrics: '"Contigo cada bug es más fácil de resolver..."',
-                art: '/api/placeholder/400/400'
+                title: 'Star Shopping',
+                art: 'img/fto-album.jpg', 
+                url: 'music/cancion-2.mp3', 
+                en: textLilPeepEN,
+                es: textLilPeepES
             },
             {
-                title: 'Hackathon de Amor',
-                lyrics: '"Programamos nuestro futuro juntos..."',
-                art: '/api/placeholder/400/400'
+                title: 'Feel It',
+                art: 'img/fto-especial.jpeg', 
+                url: 'music/cancion-1.mp3', 
+                en: textD4vdEN,
+                es: textD4vdES
             }
         ];
 
         let currentTrack = 0;
         let isPlaying = false;
+        
+        const audioControl = document.getElementById('mainAudioElement');
+        const playBtn = document.getElementById('playBtn');
+        const albumArtImg = document.getElementById('albumArt');
+
+        function loadTrack(trackIndex) {
+            const track = tracks[trackIndex];
+            document.getElementById('songTitle').textContent = track.title;
+            audioControl.src = track.url;
+            albumArtImg.src = track.art;
+            
+            // Actualiza los textos del panel interno de letras de forma inmediata
+            document.getElementById('panelLyricEn').textContent = track.en;
+            document.getElementById('panelLyricEs').textContent = track.es;
+            document.getElementById('lyricsPanelTitle').textContent = "Letra: " + track.title;
+        }
 
         function togglePlay() {
-            isPlaying = !isPlaying;
-            const btn = document.getElementById('playBtn');
-            btn.textContent = isPlaying ? '⏸️' : '▶️';
+            if (!audioControl.src) {
+                loadTrack(currentTrack);
+            }
+
+            if (audioControl.paused) {
+                audioControl.play().then(() => {
+                    isPlaying = true;
+                    playBtn.textContent = '⏸️';
+                    albumArtImg.classList.add('playing');
+                }).catch(err => {
+                    alert("Verifica tus archivos de audio en la carpeta music.");
+                });
+            } else {
+                audioControl.pause();
+                isPlaying = false;
+                playBtn.textContent = '▶️';
+                albumArtImg.classList.remove('playing');
+            }
         }
 
         function nextTrack() {
             currentTrack = (currentTrack + 1) % tracks.length;
-            updateTrackInfo();
+            loadTrack(currentTrack);
+            if (isPlaying) {
+                audioControl.play().then(() => { playBtn.textContent = '⏸️'; });
+            }
         }
 
         function previousTrack() {
             currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
-            updateTrackInfo();
+            loadTrack(currentTrack);
+            if (isPlaying) {
+                audioControl.play().then(() => { playBtn.textContent = '⏸️'; });
+            }
         }
 
-        function updateTrackInfo() {
-            document.getElementById('songTitle').textContent = tracks[currentTrack].title;
-            document.getElementById('lyrics').textContent = tracks[currentTrack].lyrics;
-            document.getElementById('albumArt').src = tracks[currentTrack].art;
+        /* === CAMBIO MÁGICO: Funciones del panel de letra lateral === */
+        function openLyricsPanel() {
+            document.getElementById('lyricsPanel').classList.add('open');
         }
 
-        // Inicialización
+        function closeLyricsPanel() {
+            document.getElementById('lyricsPanel').classList.remove('open');
+        }
+
+        // Inicialización básica
         document.addEventListener('DOMContentLoaded', () => {
             createHearts();
-            startTypewriter();
             resetMemoryGame();
-        });
-
-        // Scroll suave con parallax
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            document.querySelectorAll('.gallery-item').forEach(item => {
-                const speed = item.querySelector('img').getAttribute('data-parallax');
-                if (speed) {
-                    item.querySelector('img').style.transform = `translateY(${scrolled * speed}px)`;
-                }
-            });
+            loadTrack(currentTrack);
         });
     </script>
-</body>
-</html>
